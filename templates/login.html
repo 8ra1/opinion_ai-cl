@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- يجعل الصفحة مناسبة للشاشات المختلفة -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OPINION.AI - Login</title>
+
+    <!-- ربط ملف التنسيقات الخارجي -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- الحاوية العامة -->
+    <div class="page-container">
+
+        <!-- نفس تخطيط الصفحات المعتمدة على النماذج -->
+        <div class="form-page">
+
+            <!-- =========================================
+                 الجزء الرئيسي: نموذج تسجيل الدخول
+                 ========================================= -->
+            <div class="card form-panel">
+                <h1>Admin / Owner Login</h1>
+                <p>
+                    Sign in to access the dashboard and review analysis results.
+                </p>
+
+                <!-- رسائل Flask -->
+                <div class="flash-messages">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                <!-- نموذج تسجيل الدخول -->
+                <form action="{{ url_for('login') }}" method="POST">
+
+                    <!-- البريد الإلكتروني -->
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+                    </div>
+
+                    <!-- كلمة المرور -->
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+                    </div>
+
+                    <!-- زر تسجيل الدخول -->
+                    <div class="form-group">
+                        <button class="btn-primary" type="submit">Login</button>
+                    </div>
+                </form>
+
+                <!-- روابط أسفل الصفحة -->
+                <div class="form-links">
+                    <a class="inline-link" href="{{ url_for('home') }}">Back to Review Page</a>
+                </div>
+            </div>
+
+            <!-- =========================================
+                 الجزء الجانبي: شرح مختصر
+                 ========================================= -->
+            <div class="card info-panel">
+                <h2>Dashboard Access</h2>
+                <p>
+                    After login, authorized users can review system outputs and monitor
+                    category and opinion summaries.
+                </p>
+
+                <ul>
+                    <li>Access the dashboard securely.</li>
+                    <li>Review predicted categories and opinions.</li>
+                    <li>Inspect detailed analysis records.</li>
+                    <li>Log out safely when finished.</li>
+                </ul>
+
+                <p class="muted">
+                    Use the seeded accounts created earlier, such as owner and admin.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

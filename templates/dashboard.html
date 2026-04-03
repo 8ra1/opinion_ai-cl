@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- يجعل الصفحة مناسبة للشاشات المختلفة -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OPINION.AI - Dashboard</title>
+
+    <!-- ربط ملف التنسيقات الخارجي -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- الحاوية العامة -->
+    <div class="page-container">
+
+        <!-- رسائل Flask -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- =========================================
+             رأس لوحة التحكم
+             ========================================= -->
+        <div class="card dashboard-header">
+            <div class="dashboard-topbar">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>
+                        Logged in as: <strong>{{ user_email }}</strong>
+                        ({{ user_type }})
+                    </p>
+                </div>
+
+                <!-- نموذج تسجيل الخروج -->
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button class="btn-danger" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- =========================================
+             بطاقات الملخص
+             ========================================= -->
+        <div class="summary-grid">
+
+            <!-- بطاقة الفئات -->
+            <div class="card summary-card">
+                <h2 class="section-title">Category Summary</h2>
+
+                {% if category_summary %}
+                    <ul class="summary-list">
+                        {% for row in category_summary %}
+                            <li>
+                                <span class="summary-key">{{ row["category_name"] }}</span>
+                                <span class="summary-value">{{ row["total"] }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-message">No category data available yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- بطاقة الآراء -->
+            <div class="card summary-card">
+                <h2 class="section-title">Opinion Distribution</h2>
+
+                {% if opinion_distribution %}
+                    <ul class="summary-list">
+                        {% for row in opinion_distribution %}
+                            <li>
+                                <span class="summary-key">{{ row["opinion"] }}</span>
+                                <span class="summary-value">{{ row["total"] }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-message">No opinion data available yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- =========================================
+             جدول النتائج
+             ========================================= -->
+        <div class="card table-card">
+            <h2>Analysis Results</h2>
+
+            {% if results %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Review ID</th>
+                            <th>Text</th>
+                            <th>Stars</th>
+                            <th>Status</th>
+                            <th>Category</th>
+                            <th>Opinion</th>
+                            <th>Created At</th>
+                            <th>Analyzed At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in results %}
+                            <tr>
+                                <td>{{ row["review_id"] }}</td>
+                                <td>{{ row["text"] }}</td>
+                                <td>{{ row["stars"] }}</td>
+
+                                <!-- عرض الحالة بشكل شارة -->
+                                <td>
+                                    <span class="badge badge-status">
+                                        {{ row["status"] }}
+                                    </span>
+                                </td>
+
+                                <td>{{ row["category_name"] }}</td>
+
+                                <!-- عرض الرأي بشكل شارة ملونة -->
+                                <td>
+                                    <span class="badge badge-{{ row['opinion'] }}">
+                                        {{ row["opinion"] }}
+                                    </span>
+                                </td>
+
+                                <td>{{ row["created_at"] }}</td>
+                                <td>{{ row["analyzed_at"] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-message">No analysis results available yet.</p>
+            {% endif %}
+
+            <!-- رابط العودة -->
+            <a class="inline-link" href="{{ url_for('home') }}">Back to Review Page</a>
+        </div>
+
+    </div>
+</body>
+</html>

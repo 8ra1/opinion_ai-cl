@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- يجعل الصفحة مناسبة للشاشات المختلفة -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OPINION.AI - Submit Review</title>
+
+    <!-- ربط ملف التنسيقات الخارجي -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- الحاوية العامة -->
+    <div class="page-container">
+
+        <!-- تخطيط الصفحة إلى جزأين:
+             1) نموذج التقييم
+             2) لوحة شرح جانبية -->
+        <div class="form-page">
+
+            <!-- =========================================
+                 الجزء الرئيسي: نموذج إرسال التقييم
+                 ========================================= -->
+            <div class="card form-panel">
+                <h1>Submit Your Review</h1>
+                <p>
+                    Share your experience with the restaurant.
+                    Your review will be analyzed automatically to predict its category and opinion.
+                </p>
+
+                <!-- رسائل Flask -->
+                <div class="flash-messages">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                <!-- نموذج إرسال التقييم -->
+                <form action="{{ url_for('submit_review') }}" method="POST">
+
+                    <!-- حقل نص التقييم -->
+                    <div class="form-group">
+                        <label for="text">Review Text</label>
+                        <textarea
+                            id="text"
+                            name="text"
+                            placeholder="Write your review here..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <!-- حقل عدد النجوم -->
+                    <div class="form-group">
+                        <label for="stars">Stars</label>
+                        <select id="stars" name="stars" required>
+                            <option value="">Select rating</option>
+                            <option value="1">1 Star</option>
+                            <option value="2">2 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="5">5 Stars</option>
+                        </select>
+                    </div>
+
+                    <!-- زر الإرسال -->
+                    <div class="form-group">
+                        <button class="btn-primary" type="submit">Submit Review</button>
+                    </div>
+                </form>
+
+                <!-- روابط سفلية -->
+                <div class="form-links">
+                    <a class="inline-link" href="{{ url_for('login') }}">Admin / Owner Login</a>
+                </div>
+            </div>
+
+            <!-- =========================================
+                 الجزء الجانبي: شرح سريع للمستخدم
+                 ========================================= -->
+            <div class="card info-panel">
+                <h2>How it works</h2>
+                <p>
+                    The system stores your review, analyzes its main category, predicts the opinion,
+                    and makes the result available in the dashboard.
+                </p>
+
+                <ul>
+                    <li>Write a short and clear review.</li>
+                    <li>Select a rating from 1 to 5 stars.</li>
+                    <li>The analysis runs automatically after submission.</li>
+                    <li>Authorized users can view results in the dashboard.</li>
+                </ul>
+
+                <p class="muted">
+                    Example categories include Food Quality, Cleanliness, Staff Behavior, and Price.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
