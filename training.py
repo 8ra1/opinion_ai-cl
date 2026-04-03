@@ -1,109 +1,93 @@
-# =========================================
-# OPINION.AI - Training Script
-# هذا الملف مسؤول عن:
-# 1) قراءة بيانات التدريب
-# 2) تدريب مودل الفئة
-# 3) تدريب مودل الرأي
-# 4) حفظ المودلات والـ vectorizers
-# =========================================
-
 import pandas as pd
 from pathlib import Path
 import joblib
 
+from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
 
-# -----------------------------------------
-# تحديد مسارات المشروع
-# -----------------------------------------
+# 1) Project paths
 base_dir = Path(__file__).parent
 data_path = base_dir / "data" / "training_reviews.csv"
 models_dir = base_dir / "models"
 
-# إنشاء مجلد models إذا لم يكن موجودًا
 models_dir.mkdir(exist_ok=True)
 
-# -----------------------------------------
-# قراءة ملف البيانات
-# encoding="utf-8-sig" مناسب غالبًا مع الملفات العربية
-# -----------------------------------------
+# 2) Read dataset
 df = pd.read_csv(data_path, encoding="utf-8-sig")
 
-# -----------------------------------------
-# حذف الصفوف الناقصة احتياطًا
-# -----------------------------------------
+# تنظيف بسيط
 df = df.dropna(subset=["text", "category", "opinion"])
-
-# -----------------------------------------
-# تنظيف بسيط للنصوص والقيم
-# strip() يزيل الفراغات الزائدة
-# -----------------------------------------
 df["text"] = df["text"].astype(str).str.strip()
 df["category"] = df["category"].astype(str).str.strip()
 df["opinion"] = df["opinion"].astype(str).str.strip()
 
-# -----------------------------------------
-# فصل النصوص عن الـ labels
-# X = النصوص
-# y_category = الفئات الصحيحة
-# y_opinion = الآراء الصحيحة
-# -----------------------------------------
+# 3) Split inputs and labels
 X = df["text"]
 y_category = df["category"]
 y_opinion = df["opinion"]
 
-# -----------------------------------------
-# إنشاء أدوات تحويل النص إلى features رقمية
-# استخدمنا TF-IDF لأنه بسيط ومناسب
-# ngram_range=(1, 2) يعني:
-# - كلمات مفردة
-# - وكلمتين متجاورتين
-# -----------------------------------------
+# 4) Split data for category model
+X_train_cat, X_test_cat, y_train_cat, y_test_cat = train_test_split(
+    X, y_category, test_size=0.2, random_state=42, stratify=y_category
+)
+
+# 5) Split data for opinion model
+X_train_op, X_test_op, y_train_op, y_test_op = train_test_split(
+    X, y_opinion, test_size=0.2, random_state=42, stratify=y_opinion
+)
+
+# 6) Vectorizers
 category_vectorizer = TfidfVectorizer(ngram_range=(1, 2))
 opinion_vectorizer = TfidfVectorizer(ngram_range=(1, 2))
 
-# -----------------------------------------
-# تحويل النصوص إلى صيغة رقمية
-# fit_transform:
-# - يتعلم من النصوص
-# - ثم يحولها إلى features
-# -----------------------------------------
-X_category_vec = category_vectorizer.fit_transform(X)
-X_opinion_vec = opinion_vectorizer.fit_transform(X)
+X_train_cat_vec = category_vectorizer.fit_transform(X_train_cat)
+X_test_cat_vec = category_vectorizer.transform(X_test_cat)
 
-# -----------------------------------------
-# إنشاء المودلات
-# اخترنا LogisticRegression لأنه:
-# - بسيط
-# - سريع
-# - جيد لمشروعك الحالي
-# max_iter=1000 لتقليل مشاكل convergence
-# -----------------------------------------
+X_train_op_vec = opinion_vectorizer.fit_transform(X_train_op)
+X_test_op_vec = opinion_vectorizer.transform(X_test_op)
+
+# 7) Models
 category_model = LogisticRegression(max_iter=1000)
 opinion_model = LogisticRegression(max_iter=1000)
 
-# -----------------------------------------
-# تدريب المودلين
-# -----------------------------------------
-category_model.fit(X_category_vec, y_category)
-opinion_model.fit(X_opinion_vec, y_opinion)
+category_model.fit(X_train_cat_vec, y_train_cat)
+opinion_model.fit(X_train_op_vec, y_train_op)
 
-# -----------------------------------------
-# حفظ المودلات داخل مجلد models
-# -----------------------------------------
+# 8) Predictions
+y_pred_cat = category_model.predict(X_test_cat_vec)
+y_pred_op = opinion_model.predict(X_test_op_vec)
+
+# 9) Evaluation
+category_accuracy = accuracy_score(y_test_cat, y_pred_cat)
+opinion_accuracy = accuracy_score(y_test_op, y_pred_op)
+
+print("=== DATASET INFO ===")
+print("Rows and Columns:", df.shape)
+
+print("\nCategory Distribution:")
+print(df["category"].value_counts())
+
+print("\nOpinion Distribution:")
+print(df["opinion"].value_counts())
+
+print("\n=== CATEGORY MODEL RESULTS ===")
+print("Category Model Accuracy:", category_accuracy)
+
+print("\nCategory Model Report:")
+print(classification_report(y_test_cat, y_pred_cat))
+
+print("\n=== OPINION MODEL RESULTS ===")
+print("Opinion Model Accuracy:", opinion_accuracy)
+
+print("\nOpinion Model Report:")
+print(classification_report(y_test_op, y_pred_op))
+
+# 10) Save models and vectorizers
 joblib.dump(category_model, models_dir / "category_model.pkl")
 joblib.dump(opinion_model, models_dir / "opinion_model.pkl")
-
-# -----------------------------------------
-# حفظ الـ vectorizers أيضًا
-# لأن analysis.py يحتاجها لاحقًا
-# -----------------------------------------
 joblib.dump(category_vectorizer, models_dir / "category_vectorizer.pkl")
 joblib.dump(opinion_vectorizer, models_dir / "opinion_vectorizer.pkl")
 
-# -----------------------------------------
-# رسالة نجاح
-# -----------------------------------------
-print("Training completed successfully.")
-print("Models and vectorizers were saved in the models folder.")
+print("\nModels and vectorizers saved successfully.")
