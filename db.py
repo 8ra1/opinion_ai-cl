@@ -1,10 +1,12 @@
 import sqlite3
 from pathlib import Path
 
+# Database path
 base_dir = Path(__file__).parent
 db_path = base_dir / "database" / "opinion_ai.db"
 
 
+# Database connection helper
 def get_db_connection():
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -12,6 +14,7 @@ def get_db_connection():
     return conn
 
 
+# Review operations
 def create_review(text, stars, status="queued"):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -48,6 +51,7 @@ def update_review_status(review_id, new_status):
     conn.close()
 
 
+# Category lookup
 def get_category_id_by_name(category_name):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -70,6 +74,7 @@ def get_category_id_by_name(category_name):
     return row["id"]
 
 
+# Analysis result storage
 def save_review_analysis(review_id, category_id, opinion):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -86,6 +91,7 @@ def save_review_analysis(review_id, category_id, opinion):
     conn.close()
 
 
+# User lookup
 def get_user_by_email(email):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -105,6 +111,7 @@ def get_user_by_email(email):
     return user
 
 
+# Dashboard summaries
 def get_category_summary():
     conn = get_db_connection()
     cursor = conn.cursor()

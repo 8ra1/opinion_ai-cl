@@ -1,8 +1,10 @@
 import sqlite3
 from werkzeug.security import generate_password_hash
 
+# Database path
 DB_PATH = "database/opinion_ai.db"
 
+# Default categories
 CATEGORIES = [
     "Food Quality",
     "Cleanliness",
@@ -10,6 +12,7 @@ CATEGORIES = [
     "Price"
 ]
 
+# Default users
 USERS = [
     {
         "email": "owner@opinion.ai",
@@ -23,15 +26,18 @@ USERS = [
     }
 ]
 
+# Open database connection
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
+# Insert categories
 for category in CATEGORIES:
     cursor.execute(
         "INSERT OR IGNORE INTO categories (name) VALUES (?)",
         (category,)
     )
 
+# Insert users
 for user in USERS:
     password_hash = generate_password_hash(user["password"])
 

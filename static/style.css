@@ -1,8 +1,11 @@
 /* =========================================
-   OPINION.AI - Soft Gray Theme
+   OPINION.AI - Global Stylesheet
+   Controls layout, colors, forms, cards,
+   dashboard sections, tables, and badges
    ========================================= */
 
 :root {
+    /* Theme colors */
     --bg: #efefef;
     --surface: #f7f7f7;
     --surface-2: #f0f0f0;
@@ -21,6 +24,7 @@
     --radius: 22px;
 }
 
+/* Global reset */
 * {
     box-sizing: border-box;
 }
@@ -30,6 +34,7 @@ html, body {
     padding: 0;
 }
 
+/* Page background and base text */
 body {
     font-family: Arial, sans-serif;
     background: var(--bg);
@@ -37,14 +42,13 @@ body {
     min-height: 100vh;
 }
 
+/* Main layout container */
 .page-container {
     width: min(95%, 1180px);
     margin: 32px auto;
 }
 
-/* -----------------------------------------
-   البطاقات
-   ----------------------------------------- */
+/* Shared card style */
 .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -52,9 +56,7 @@ body {
     box-shadow: var(--shadow);
 }
 
-/* -----------------------------------------
-   صفحات الفورم: review / login
-   ----------------------------------------- */
+/* Two-column form layout */
 .form-page {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
@@ -62,11 +64,13 @@ body {
     align-items: stretch;
 }
 
+/* Form and side panels */
 .form-panel,
 .info-panel {
     padding: 30px;
 }
 
+/* Headings and text blocks */
 .form-panel h1,
 .info-panel h2,
 .section-title,
@@ -87,6 +91,7 @@ body {
     line-height: 1.7;
 }
 
+/* Side info panel */
 .info-panel {
     background: #f3f3f3;
 }
@@ -97,9 +102,7 @@ body {
     line-height: 1.8;
 }
 
-/* -----------------------------------------
-   الحقول
-   ----------------------------------------- */
+/* Form controls */
 .form-group {
     margin-top: 18px;
 }
@@ -148,9 +151,7 @@ textarea {
     min-height: 160px;
 }
 
-/* -----------------------------------------
-   الأزرار
-   ----------------------------------------- */
+/* Buttons */
 button {
     border: none;
     padding: 14px 16px;
@@ -170,9 +171,7 @@ button {
     background: var(--primary-dark);
 }
 
-/* -----------------------------------------
-   الروابط
-   ----------------------------------------- */
+/* Links */
 .inline-link {
     color: #66666b;
     text-decoration: none;
@@ -184,9 +183,7 @@ button {
     text-decoration: underline;
 }
 
-/* -----------------------------------------
-   رسائل Flash
-   ----------------------------------------- */
+/* Flash messages */
 .flash-messages {
     margin-bottom: 18px;
 }
@@ -209,6 +206,7 @@ button {
     color: var(--error-text);
 }
 
+/* Small form links row */
 .form-links {
     margin-top: 18px;
     display: flex;
@@ -217,9 +215,7 @@ button {
     flex-wrap: wrap;
 }
 
-/* -----------------------------------------
-   Dashboard
-   ----------------------------------------- */
+/* Dashboard header */
 .dashboard-header {
     padding: 26px;
     margin-bottom: 20px;
@@ -233,6 +229,7 @@ button {
     flex-wrap: wrap;
 }
 
+/* Summary cards */
 .summary-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -272,9 +269,7 @@ button {
     font-weight: 700;
 }
 
-/* -----------------------------------------
-   الجدول
-   ----------------------------------------- */
+/* Results table */
 .table-card {
     padding: 24px;
     overflow-x: auto;
@@ -308,9 +303,7 @@ tbody tr:hover {
     background: #f1f1f1;
 }
 
-/* -----------------------------------------
-   الشارات العامة
-   ----------------------------------------- */
+/* Badge styles */
 .badge {
     display: inline-block;
     padding: 6px 12px;
@@ -321,36 +314,31 @@ tbody tr:hover {
     border: 1px solid transparent;
 }
 
-/* شارة الحالة */
 .badge-status {
     background: #ececec;
     color: #4b4b50;
     border-color: #d2d2d7;
 }
 
-/* رأي إيجابي */
 .badge-positive {
     background: #dff3e4;
     color: #24613a;
     border-color: #b9dfc2;
 }
 
-/* رأي محايد */
 .badge-neutral {
     background: #eeeeee;
     color: #55555a;
     border-color: #d3d3d8;
 }
 
-/* رأي سلبي */
 .badge-negative {
     background: #f7dddd;
     color: #8a2f2f;
     border-color: #e7bcbc;
 }
-/* -----------------------------------------
-   Responsive
-   ----------------------------------------- */
+
+/* Responsive rules */
 @media (max-width: 900px) {
     .form-page {
         grid-template-columns: 1fr;

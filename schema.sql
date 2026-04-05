@@ -1,7 +1,4 @@
--- this sql for creating the database schema for the review management system. It defines tables for users, reviews, categories, and review analysis, along with their relationships and constraints.
-
--- جدول المالك و الادمن
-
+-- System users
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT NOT NULL UNIQUE,
@@ -10,8 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
---جدول التقييمات الغير معالجه
-
+-- Raw customer reviews
 CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT NOT NULL,
@@ -20,15 +16,13 @@ CREATE TABLE IF NOT EXISTS reviews (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
---جدول التصنيفات
-
+-- Fixed review categories
 CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE
 );
 
---جدول التقاييمات المعالجه
-
+-- AI analysis results
 CREATE TABLE IF NOT EXISTS review_analysis (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     review_id INTEGER NOT NULL UNIQUE,

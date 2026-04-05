@@ -1,11 +1,7 @@
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import check_password_hash
 
-
 from analysis import analyze_review
-
-
 from db import (
     create_review,
     update_review_status,
@@ -17,57 +13,31 @@ from db import (
     get_all_analysis_results,
 )
 
-
+# Flask app setup
 app = Flask(__name__)
-
-
 app.secret_key = "change-this-secret-key"
 
 
+# Session helper
 def is_logged_in():
-    """
-    دالة مساعدة:
-    ترجع True إذا كان هناك مستخدم مسجل دخول داخل session
-    """
     return "user_id" in session
 
 
-
+# Public pages
 @app.route("/")
 def home():
-    """
-    تعرض صفحة review.html
-    هذه الصفحة سيستخدمها العميل لإرسال:
-    - النص
-    - عدد النجوم
-    """
     return render_template("review.html")
 
 
-
+# Review submission flow
 @app.route("/reviews", methods=["POST"])
 def submit_review():
-    """
-    هذه الدالة تستقبل التقييم من الفورم.
-    التسلسل المنطقي هنا هو:
-    1) قراءة البيانات من الطلب
-    2) التحقق المبدئي من صحة البيانات
-    3) حفظ التقييم الخام في reviews
-    4) تحليل النص باستخدام AI
-    5) تحويل اسم الفئة إلى category_id
-    6) حفظ نتيجة التحليل
-    7) تحديث status إلى processed
-    """
-
-
     text = request.form.get("text", "").strip()
     stars = request.form.get("stars", "").strip()
-
 
     if not text:
         flash("Review text is required.", "error")
         return redirect(url_for("home"))
-
 
     try:
         stars = int(stars)
@@ -77,66 +47,43 @@ def submit_review():
         flash("Stars must be a number between 1 and 5.", "error")
         return redirect(url_for("home"))
 
-
     review_id = create_review(text, stars)
-
-
     result = analyze_review(text)
 
     category_name = result["category"]
     opinion = result["opinion"]
 
-
     category_id = get_category_id_by_name(category_name)
-
 
     if category_id is None:
         flash("Predicted category was not found in database.", "error")
         return redirect(url_for("home"))
 
-
     save_review_analysis(review_id, category_id, opinion)
-
-
     update_review_status(review_id, "processed")
-
 
     flash("Review submitted and analyzed successfully.", "success")
     return redirect(url_for("home"))
 
 
-
+# Login flow
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """
-    GET:
-        يعرض صفحة تسجيل الدخول
-    POST:
-        يتحقق من البريد وكلمة المرور
-        وإذا نجح، ينشئ session للمستخدم
-    """
-
-
     if request.method == "GET":
         return render_template("login.html")
 
-
     email = request.form.get("email", "").strip()
     password = request.form.get("password", "").strip()
-
 
     if not email or not password:
         flash("Email and password are required.", "error")
         return redirect(url_for("login"))
 
-
     user = get_user_by_email(email)
-
 
     if user is None or not check_password_hash(user["password_hash"], password):
         flash("Invalid email or password.", "error")
         return redirect(url_for("login"))
-
 
     session["user_id"] = user["id"]
     session["user_email"] = user["email"]
@@ -146,29 +93,16 @@ def login():
     return redirect(url_for("dashboard"))
 
 
-
+# Protected dashboard
 @app.route("/dashboard")
 def dashboard():
-    """
-    هذه الصفحة تعرض:
-    - Category Summary
-    - Opinion Distribution
-    - Results Table
-
-    وهي صفحة محمية:
-    لا يمكن الوصول لها إلا بعد تسجيل الدخول
-    """
-
-
     if not is_logged_in():
         flash("Please log in first.", "error")
         return redirect(url_for("login"))
 
-
     category_summary = get_category_summary()
     opinion_distribution = get_opinion_distribution()
     results = get_all_analysis_results()
-
 
     return render_template(
         "dashboard.html",
@@ -180,18 +114,14 @@ def dashboard():
     )
 
 
-
+# Logout flow
 @app.route("/logout", methods=["POST"])
 def logout():
-    """
-    يحذف بيانات الجلسة session
-    ويعيد المستخدم إلى صفحة تسجيل الدخول
-    """
     session.clear()
     flash("Logged out successfully.", "success")
     return redirect(url_for("login"))
 
 
-
+# Run development server
 if __name__ == "__main__":
     app.run(debug=True)

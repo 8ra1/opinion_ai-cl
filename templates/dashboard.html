@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Page metadata -->
     <meta charset="UTF-8">
-
-    <!-- يجعل الصفحة مناسبة للشاشات المختلفة -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>OPINION.AI - Dashboard</title>
 
-    <!-- ربط ملف التنسيقات الخارجي -->
+    <!-- Global stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <!-- الحاوية العامة -->
+    <!-- Main page container -->
     <div class="page-container">
 
-        <!-- رسائل Flask -->
+        <!-- Flash messages -->
         <div class="flash-messages">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -29,9 +27,7 @@
             {% endwith %}
         </div>
 
-        <!-- =========================================
-             رأس لوحة التحكم
-             ========================================= -->
+        <!-- Dashboard header -->
         <div class="card dashboard-header">
             <div class="dashboard-topbar">
                 <div>
@@ -42,19 +38,17 @@
                     </p>
                 </div>
 
-                <!-- نموذج تسجيل الخروج -->
+                <!-- Logout form -->
                 <form action="{{ url_for('logout') }}" method="POST">
                     <button class="btn-danger" type="submit">Logout</button>
                 </form>
             </div>
         </div>
 
-        <!-- =========================================
-             بطاقات الملخص
-             ========================================= -->
+        <!-- Summary cards -->
         <div class="summary-grid">
 
-            <!-- بطاقة الفئات -->
+            <!-- Category summary -->
             <div class="card summary-card">
                 <h2 class="section-title">Category Summary</h2>
 
@@ -72,7 +66,7 @@
                 {% endif %}
             </div>
 
-            <!-- بطاقة الآراء -->
+            <!-- Opinion summary -->
             <div class="card summary-card">
                 <h2 class="section-title">Opinion Distribution</h2>
 
@@ -91,9 +85,7 @@
             </div>
         </div>
 
-        <!-- =========================================
-             جدول النتائج
-             ========================================= -->
+        <!-- Detailed analysis table -->
         <div class="card table-card">
             <h2>Analysis Results</h2>
 
@@ -117,23 +109,17 @@
                                 <td>{{ row["review_id"] }}</td>
                                 <td>{{ row["text"] }}</td>
                                 <td>{{ row["stars"] }}</td>
-
-                                <!-- عرض الحالة بشكل شارة -->
                                 <td>
                                     <span class="badge badge-status">
                                         {{ row["status"] }}
                                     </span>
                                 </td>
-
                                 <td>{{ row["category_name"] }}</td>
-
-                                <!-- عرض الرأي بشكل شارة ملونة -->
                                 <td>
                                     <span class="badge badge-{{ row['opinion'] }}">
                                         {{ row["opinion"] }}
                                     </span>
                                 </td>
-
                                 <td>{{ row["created_at"] }}</td>
                                 <td>{{ row["analyzed_at"] }}</td>
                             </tr>
@@ -144,7 +130,7 @@
                 <p class="empty-message">No analysis results available yet.</p>
             {% endif %}
 
-            <!-- رابط العودة -->
+            <!-- Back link -->
             <a class="inline-link" href="{{ url_for('home') }}">Back to Review Page</a>
         </div>
 
