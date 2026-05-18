@@ -18,25 +18,38 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # ✅ Install dependencies into package
+      # ✅ Setup Python (important)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # ✅ Install dependencies
       - name: Install dependencies
         run: |
+          pip install --upgrade pip
           pip install -r requirements.txt -t .
 
-      # ✅ Zip everything (code + dependencies)
+      # ✅ Zip everything
       - name: Zip function
         run: zip -r function.zip .
 
-      # ✅ AWS login (OIDC)
+      # ✅ Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::883425316561:role/GitHub-Lambda-Deploy-Role
           aws-region: eu-north-1
 
-      # ✅ Deploy
+      # ✅ Upload to S3  (THIS IS NOW INSIDE steps ✅)
+      - name: Upload to S3
+        run: |
+          aws s3 cp function.zip s3://lambda-deploy-opinion-ai/function.zip
+
+      # ✅ Deploy from S3
       - name: Deploy to AWS Lambda
         run: |
           aws lambda update-function-code \
             --function-name opinion-ai-lambda \
-            --zip-file fileb://function.zip
+            --s3-bucket lambda-deploy-opinion-ai \
+            --s3-key function.zip
