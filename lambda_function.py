@@ -1,6 +1,12 @@
 import json
-from analysis import analysis.py
-from db import db.py
+import boto3
+import uuid
+from analysis import analyze_review
+
+# Connect to DynamoDB
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('feedback')
+
 
 def lambda_handler(event, context):
     try:
@@ -14,20 +20,25 @@ def lambda_handler(event, context):
             }
 
         # ✅ Run your AI model
-        result = analyze_text(review)
+        result = analyze_review(review)
 
         category = result["category"]
-        sentiment = result["sentiment"]
+        opinion = result["opinion"]
 
-        # ✅ Save to database
-        save_feedback(review, category, sentiment)
+        # ✅ Save to DynamoDB
+        table.put_item(Item={
+            "id": str(uuid.uuid4()),
+            "review": review,
+            "category": category,
+            "opinion": opinion
+        })
 
         return {
             "statusCode": 200,
             "body": json.dumps({
                 "review": review,
                 "category": category,
-                "sentiment": sentiment
+                "opinion": opinion
             })
         }
 
