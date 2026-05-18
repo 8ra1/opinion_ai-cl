@@ -18,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # ✅ Setup Python (important)
+      # ✅ Setup Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -41,7 +41,7 @@ jobs:
           role-to-assume: arn:aws:iam::883425316561:role/GitHub-Lambda-Deploy-Role
           aws-region: eu-north-1
 
-      # ✅ Upload to S3  (THIS IS NOW INSIDE steps ✅)
+      # ✅ Upload to S3  
       - name: Upload to S3
         run: |
           aws s3 cp function.zip s3://lambda-deploy-opinion-ai/function.zip
