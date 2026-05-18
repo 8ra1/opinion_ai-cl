@@ -18,15 +18,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # ✅ Install dependencies into package
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt -t .
+
+      # ✅ Zip everything (code + dependencies)
       - name: Zip function
         run: zip -r function.zip .
 
+      # ✅ AWS login (OIDC)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::883425316561:role/GitHub-Lambda-Deploy-Role
           aws-region: eu-north-1
 
+      # ✅ Deploy
       - name: Deploy to AWS Lambda
         run: |
           aws lambda update-function-code \
