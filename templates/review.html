@@ -88,7 +88,7 @@ function sendReview(event) {
     const review = document.getElementById("text").value;
     const stars = document.getElementById("stars").value;
 
-    fetch("https://z1wqrbpzn8.execute-api.eu-north-1.amazonaws.com/default/opinion-ai-lambda", {
+    fetch("https://z1wqrbpzn8.execute-api.eu-north-1.amazonaws.com/analyze", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
