@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OPINION.AI - Submit Review</title>
 
-    <!-- Global stylesheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- ✅ Static stylesheet (for S3) -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -21,9 +21,9 @@
                 Your review will be analyzed automatically.
             </p>
 
-            <!-- ✅ FORM now uses JavaScript instead of Flask -->
+            <!-- ✅ Form now uses JS (no Flask) -->
             <form onsubmit="sendReview(event)">
-
+                
                 <div class="form-group">
                     <label for="text">Review Text</label>
                     <textarea
@@ -54,8 +54,9 @@
             <!-- ✅ Result display -->
             <div id="result" style="margin-top:15px;"></div>
 
+            <!-- ✅ Static navigation -->
             <div class="form-links">
-                <a class="inline-link" href="{{ url_for('login') }}">Admin / Owner Login</a>
+                <a class="inline-link" href="login.html">Admin / Owner Login</a>
             </div>
         </div>
 
@@ -80,10 +81,10 @@
     </div>
 </div>
 
-<!-- ✅ JAVASCRIPT (MOST IMPORTANT PART) -->
+<!-- ✅ JavaScript (Lambda integration) -->
 <script>
 function sendReview(event) {
-    event.preventDefault(); // stop form from going to EC2 Flask
+    event.preventDefault();
 
     const review = document.getElementById("text").value;
     const stars = document.getElementById("stars").value;
@@ -114,3 +115,4 @@ function sendReview(event) {
 
 </body>
 </html>
+``
