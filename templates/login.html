@@ -6,96 +6,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OPINION.AI - Login</title>
 
-    <!-- Global stylesheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- ✅ Static CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Main page container -->
-    <div class="page-container">
+<div class="page-container">
+    <div class="form-page">
 
-        <!-- Two-column form layout -->
-        <div class="form-page">
+        <div class="card form-panel">
+            <h1>Sign In</h1>
+            <p>Access the dashboard and review results.</p>
 
-            <!-- Login form panel -->
-            <div class="card form-panel">
-                <h1>Sign In</h1>
-                <p>Access the dashboard and review results.</p>
+            <!-- ✅ Static login form -->
+            <form onsubmit="handleLogin(event)">
 
-                <!-- Flash messages -->
-                <div class="flash-messages">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="flash-message flash-{{ category }}">
-                                    {{ message }}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required
+                    >
                 </div>
 
-                <!-- Login form -->
-                <form action="{{ url_for('login') }}" method="POST">
-
-                    <!-- Email input -->
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="Enter your email"
-                            required
-                        >
-                    </div>
-
-                    <!-- Password input -->
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            required
-                        >
-                    </div>
-
-                    <!-- Login button -->
-                    <div class="form-group">
-                        <button class="btn-primary" type="submit">Login</button>
-                    </div>
-                </form>
-
-                <!-- Navigation links -->
-                <div class="form-links">
-                    <a class="inline-link" href="{{ url_for('home') }}">Back to Review Page</a>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                    >
                 </div>
+
+                <div class="form-group">
+                    <button class="btn-primary" type="submit">Login</button>
+                </div>
+            </form>
+
+            <!-- ✅ Navigation -->
+            <div class="form-links">
+                <a class="inline-link" href="review.html">Back to Review Page</a>
             </div>
-
-            <!-- Side information panel -->
-            <div class="card info-panel">
-                <h2>Dashboard Access</h2>
-                <p>
-                    Authorized users can monitor review analysis results from this page.
-                </p>
-
-                <!-- Short dashboard features -->
-                <ul>
-                    <li>View category summary.</li>
-                    <li>View opinion distribution.</li>
-                    <li>Check full review analysis table.</li>
-                    <li>Log out safely after use.</li>
-                </ul>
-
-                <p class="muted">
-                    Use the default owner or admin account created in the database seed step.
-                </p>
-            </div>
-
         </div>
+
+        <div class="card info-panel">
+            <h2>Dashboard Access</h2>
+            <p>
+                Authorized users can monitor review analysis results from this page.
+            </p>
+
+            <ul>
+                <li>View category summary.</li>
+                <li>View opinion distribution.</li>
+                <li>Check full review analysis table.</li>
+                <li>Log out safely after use.</li>
+            </ul>
+
+            <p class="muted">
+                This demo uses a simplified login system.
+            </p>
+        </div>
+
     </div>
+</div>
+
+<!-- ✅ JavaScript login handler -->
+<script>
+function handleLogin(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // ✅ Simple demo login
+    if (email && password) {
+        // Save login state locally
+        localStorage.setItem("loggedIn", "true");
+
+        // Redirect to dashboard
+        window.location.href = "dashboard.html";
+    }
+}
+</script>
 
 </body>
 </html>
