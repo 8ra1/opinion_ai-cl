@@ -1,139 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Page metadata -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OPINION.AI - Dashboard</title>
 
-    <!-- Global stylesheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- ✅ Static CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Main page container -->
-    <div class="page-container">
+<div class="page-container">
 
-        <!-- Flash messages -->
-        <div class="flash-messages">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="flash-message flash-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div>
-
-        <!-- Dashboard header -->
-        <div class="card dashboard-header">
-            <div class="dashboard-topbar">
-                <div>
-                    <h1>Dashboard</h1>
-                    <p>
-                        Logged in as: <strong>{{ user_email }}</strong>
-                        ({{ user_type }})
-                    </p>
-                </div>
-
-                <!-- Logout form -->
-                <form action="{{ url_for('logout') }}" method="POST">
-                    <button class="btn-danger" type="submit">Logout</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Summary cards -->
-        <div class="summary-grid">
-
-            <!-- Category summary -->
-            <div class="card summary-card">
-                <h2 class="section-title">Category Summary</h2>
-
-                {% if category_summary %}
-                    <ul class="summary-list">
-                        {% for row in category_summary %}
-                            <li>
-                                <span class="summary-key">{{ row["category_name"] }}</span>
-                                <span class="summary-value">{{ row["total"] }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="empty-message">No category data available yet.</p>
-                {% endif %}
+    <!-- ✅ Header -->
+    <div class="card dashboard-header">
+        <div class="dashboard-topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <p id="user-info"></p>
             </div>
 
-            <!-- Opinion summary -->
-            <div class="card summary-card">
-                <h2 class="section-title">Opinion Distribution</h2>
-
-                {% if opinion_distribution %}
-                    <ul class="summary-list">
-                        {% for row in opinion_distribution %}
-                            <li>
-                                <span class="summary-key">{{ row["opinion"] }}</span>
-                                <span class="summary-value">{{ row["total"] }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="empty-message">No opinion data available yet.</p>
-                {% endif %}
-            </div>
+            <!-- ✅ Logout -->
+            <button class="btn-danger" onclick="logout()">Logout</button>
         </div>
-
-        <!-- Detailed analysis table -->
-        <div class="card table-card">
-            <h2>Analysis Results</h2>
-
-            {% if results %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Review ID</th>
-                            <th>Text</th>
-                            <th>Stars</th>
-                            <th>Status</th>
-                            <th>Category</th>
-                            <th>Opinion</th>
-                            <th>Created At</th>
-                            <th>Analyzed At</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in results %}
-                            <tr>
-                                <td>{{ row["review_id"] }}</td>
-                                <td>{{ row["text"] }}</td>
-                                <td>{{ row["stars"] }}</td>
-                                <td>
-                                    <span class="badge badge-status">
-                                        {{ row["status"] }}
-                                    </span>
-                                </td>
-                                <td>{{ row["category_name"] }}</td>
-                                <td>
-                                    <span class="badge badge-{{ row['opinion'] }}">
-                                        {{ row["opinion"] }}
-                                    </span>
-                                </td>
-                                <td>{{ row["created_at"] }}</td>
-                                <td>{{ row["analyzed_at"] }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p class="empty-message">No analysis results available yet.</p>
-            {% endif %}
-
-            <!-- Back link -->
-            <a class="inline-link" href="{{ url_for('home') }}">Back to Review Page</a>
-        </div>
-
     </div>
+
+    <!-- ✅ Summary Section -->
+    <div class="summary-grid">
+
+        <div class="card summary-card">
+            <h2 class="section-title">Category Summary</h2>
+            <ul id="category-summary" class="summary-list"></ul>
+        </div>
+
+        <div class="card summary-card">
+            <h2 class="section-title">Opinion Distribution</h2>
+            <ul id="opinion-summary" class="summary-list"></ul>
+        </div>
+    </div>
+
+    <!-- ✅ Table -->
+    <div class="card table-card">
+        <h2>Analysis Results</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Review</th>
+                    <th>Category</th>
+                    <th>Opinion</th>
+                </tr>
+            </thead>
+            <tbody id="results-table"></tbody>
+        </table>
+
+        <a class="inline-link" href="review.html">Back to Review Page</a>
+    </div>
+
+</div>
+
+<!-- ✅ JavaScript -->
+<script>
+
+// ✅ Show logged in user
+document.getElementById("user-info").innerText =
+    "Logged in as: " + localStorage.getItem("userEmail");
+
+// ✅ Logout
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+
+// ✅ LOAD DATA FROM LAMBDA (IMPORTANT)
+function loadData() {
+    fetch("https://z1wqrbpzn8.execute-api.eu-north-1.amazonaws.com/results")
+        .then(res => res.json())
+        .then(data => {
+
+            // 👉 Expected structure:
+            // data.results
+            // data.category_summary
+            // data.opinion_distribution
+
+            // ✅ Fill category summary
+            const catList = document.getElementById("category-summary");
+            catList.innerHTML = "";
+            data.category_summary.forEach(row => {
+                catList.innerHTML += `
+                    <li>
+                        <span class="summary-key">${row.category}</span>
+                        <span class="summary-value">${row.total}</span>
+                    </li>
+                `;
+            });
+
+            // ✅ Fill opinion summary
+            const opList = document.getElementById("opinion-summary");
+            opList.innerHTML = "";
+            data.opinion_distribution.forEach(row => {
+                opList.innerHTML += `
+                    <li>
+                        <span class="summary-key">${row.opinion}</span>
+                        <span class="summary-value">${row.total}</span>
+                    </li>
+                `;
+            });
+
+            // ✅ Fill table
+            const table = document.getElementById("results-table");
+            table.innerHTML = "";
+            data.results.forEach(row => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${row.review}</td>
+                        <td>${row.category}</td>
+                        <td>${row.opinion}</td>
+                    </tr>
+                `;
+            });
+
+        })
+        .catch(err => {
+            console.error(err);
+        });
+}
+
+// ✅ Load on page load
+loadData();
+
+</script>
+
 </body>
 </html>
