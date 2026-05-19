@@ -83,6 +83,7 @@
 
 <!-- ✅ JavaScript (Lambda integration) -->
 <script>
+
 function sendReview(event) {
     event.preventDefault();
 
@@ -101,9 +102,16 @@ function sendReview(event) {
     })
     .then(response => response.json())
     .then(data => {
+        // ✅ Show simple success message
         document.getElementById("result").innerHTML =
-            `<strong>Category:</strong> ${data.category}<br>
-             <strong>Opinion:</strong> ${data.opinion}`;
+            "Review analyzed successfully";
+
+        // ✅ Clear form inputs
+        document.getElementById("text").value = "";
+        document.getElementById("stars").value = "";
+
+        // ✅ Optional: log result for debugging
+        console.log(data);
     })
     .catch(error => {
         console.error(error);
@@ -111,6 +119,7 @@ function sendReview(event) {
             "<span style='color:red;'>Error sending review</span>";
     });
 }
+
 </script>
 
 </body>
