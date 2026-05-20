@@ -5,7 +5,7 @@ from analysis import analyze_review
 
 # Connect to DynamoDB
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('feedback')
+table = dynamodb.Table('feedback-883425316561-opinion-ai')
 
 
 def lambda_handler(event, context):
